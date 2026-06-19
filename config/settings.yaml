@@ -1,0 +1,63 @@
+# Application Settings for Construction Leads Finder
+app:
+  name: "Construction Leads Finder"
+  version: "0.1.0"
+  env: "development"
+  host: "0.0.0.0"
+  port: 8000
+  log_level: "INFO"
+
+# Anthropic Claude LLM Configuration
+llm:
+  model: "claude-sonnet-4-20250514"
+  max_tokens: 4096
+  temperature: 0.2
+
+# Embedding Model Configuration
+embeddings:
+  model: "all-MiniLM-L6-v2"
+  dimension: 384
+
+# ChromaDB Vector Store Configuration
+vector_store:
+  persist_directory: "./chroma_data"
+  collection_name: "construction_documents"
+
+# RAG Configuration
+rag:
+  chunk_size: 1000
+  chunk_overlap: 200
+  top_k: 8
+  max_distance: 1.5
+
+# Document Ingestion Configuration
+ingestion:
+  supported_formats:
+    - ".pdf"
+    - ".docx"
+    - ".txt"
+    - ".xlsx"
+    - ".xls"
+  documents_directory: "./data/sample_documents"
+  max_file_size_mb: 50
+
+# Lead Extraction Configuration
+lead_extraction:
+  min_confidence_score: 0.5
+  max_leads_per_query: 20
+  scoring_weights:
+    completeness: 0.3
+    budget_presence: 0.2
+    timeline_presence: 0.2
+    contact_info: 0.15
+    recency: 0.15
+
+# Agent Configuration
+agent:
+  max_iterations: 5
+  recursion_limit: 25
+
+# Streamlit UI Configuration
+ui:
+  port: 8501
+  api_base_url: "http://localhost:8000"

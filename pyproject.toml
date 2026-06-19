@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "construction-leads-finder"
+version = "0.1.0"
+description = "RAG + LangGraph agent for finding construction leads from ingested documents"
+authors = ["Developer"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+anthropic = "^0.42.0"
+langgraph = "^0.4.0"
+langchain-core = "^0.3.0"
+chromadb = "^0.5.0"
+sentence-transformers = "^3.3.0"
+pypdf2 = "^3.0.0"
+python-docx = "^1.1.0"
+openpyxl = "^3.1.0"
+pydantic = "^2.10.0"
+pydantic-settings = "^2.6.0"
+pyyaml = "^6.0.0"
+python-dotenv = "^1.0.0"
+streamlit = "^1.40.0"
+requests = "^2.32.0"
+tenacity = "^9.0.0"
+python-multipart = "^0.0.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^6.0.0"
+pytest-mock = "^3.14.0"
+httpx = "^0.28.0"
+black = "^24.10.0"
+ruff = "^0.8.0"
+mypy = "^1.13.0"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B"]
+ignore = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

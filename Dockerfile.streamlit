@@ -1,0 +1,44 @@
+# Dockerfile.streamlit - Build for the Streamlit chat UI frontend.
+# Builds a lightweight image for the Streamlit application.
+
+# Stage 1: Build dependencies
+FROM python:3.11-slim AS builder
+
+# Set working directory for the build stage
+WORKDIR /app
+
+# Install Poetry for dependency management
+RUN pip install --no-cache-dir poetry==1.8.4
+
+# Copy dependency files
+COPY pyproject.toml ./
+
+# Export only the dependencies needed for the UI (streamlit + requests)
+RUN poetry export -f requirements.txt --without-hashes --without dev -o requirements.txt
+
+# Stage 2: Production image
+FROM python:3.11-slim AS production
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements from builder stage
+COPY --from=builder /app/requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the Streamlit application and shared source
+COPY ui/ ./ui/
+COPY src/ ./src/
+COPY config/ ./config/
+
+# Expose the Streamlit port
+EXPOSE 8501
+
+# Health check for the Streamlit application
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:8501/_stcore/health || exit 1
+
+# Run the Streamlit application
+CMD ["python", "-m", "streamlit", "run", "ui/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]

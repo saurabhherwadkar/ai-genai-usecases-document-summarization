@@ -1,0 +1,50 @@
+# Docker Compose - orchestrates the FastAPI backend and Streamlit frontend services.
+# Includes shared volumes for persistent storage and inter-service networking.
+
+version: "3.8"
+
+services:
+  # FastAPI backend API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: construction-leads-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - APP_ENV=production
+      - APP_LOG_LEVEL=INFO
+      - CHROMA_PERSIST_DIRECTORY=/app/chroma_data
+      - CHROMA_COLLECTION_NAME=construction_documents
+    volumes:
+      - chroma_data:/app/chroma_data
+      - ./logs:/app/logs
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Streamlit chat UI service
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: construction-leads-ui
+    ports:
+      - "8501:8501"
+    environment:
+      - API_BASE_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  chroma_data:
+    driver: local
